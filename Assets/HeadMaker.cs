@@ -8,31 +8,55 @@ using System.IO;
 /// </summary>
 public class HeadMaker : MonoBehaviour {
 
-    //UI element for the current time display
+    /// <summary>
+    /// UI element for the current time display
+    /// </summary>
     public Text currentTimeText;
 
-    //Whether the play button has been pressed or not
+    /// <summary>
+    /// Whether the play button has been pressed or not
+    /// </summary>
     private bool playing;
 
-    //A timer that increments alongside deltaTime if the play button has been pressed
+    /// <summary>
+    /// A timer that increments alongside deltaTime if the play button has been pressed
+    /// </summary>
     private float changeTimer;
 
-    //The head object which contains all nodes
+    /// <summary>
+    /// The head object which contains all nodes
+    /// </summary>
     private GameObject head;
 
-    //A list of all active nodes in the simulation
+    /// <summary>
+    /// A list of all active nodes in the simulation
+    /// </summary>
     private List<GameObject> nodes = new List<GameObject>();
 
-    //A list of lists of data values, each list belonging to one node
+    /// <summary>
+    /// A list of lists of data values, each list belonging to one node
+    /// </summary>
     private List<double[]> data = new List<double[]>();
 
-    //The current time in the simulation
+    /// <summary>
+    /// The current time in the simulation
+    /// </summary>
     int currentTime;
 
-    //Create min and max doubles, to determine the minimum and maximum data values
+    /// <summary>
+    /// The minimum data value
+    /// </summary>
     double min = double.MaxValue;
+
+    /// <summary>
+    /// The maximum data value
+    /// </summary>
     double max = double.MinValue;
 
+    /// <summary>
+    /// Called once at the start of the application
+    /// Extracts head shape and brain data from the csv files and populates the <see cref="nodes"/> and <see cref="data"/> lists with them
+    /// </summary>
     void Start () {
         //Read the head shape file
         string[] fileContents = File.ReadAllLines("head_shape.csv");
@@ -93,6 +117,10 @@ public class HeadMaker : MonoBehaviour {
         ChangeTime(0);
     }
 
+    /// <summary>
+    /// Called every frame
+    /// Rotates the head representation and controls the current timestamp being displayed
+    /// </summary>
     void Update () {
         //Slowly rotate the head over time
         head.transform.Rotate(0, 0, 0.5f);
@@ -103,24 +131,35 @@ public class HeadMaker : MonoBehaviour {
             changeTimer += Time.deltaTime;
             if (changeTimer > 0.25f)
             {
-                incrementTime();
+                IncrementTime();
                 changeTimer = 0;
             }
         }
 	}
 
+    /// <summary>
+    /// Called whent the play button is pressed
+    /// Starts the brain animation
+    /// </summary>
     public void PlayButtonPressed()
     {
         playing = true;
         changeTimer = 0;
     }
 
+    /// <summary>
+    /// Called when the pause button is pressed
+    /// Pauses the brain animation
+    /// </summary>
     public void PauseButtonPressed()
     {
         playing = false;
     }
 
-    public void incrementTime()
+    /// <summary>
+    /// Increments the current time value of the simulation
+    /// </summary>
+    public void IncrementTime()
     {
         if (currentTime < data[0].Length - 1)
             ChangeTime(currentTime + 1);
@@ -128,7 +167,10 @@ public class HeadMaker : MonoBehaviour {
             ChangeTime(0);
     }
 
-    public void decrementTime()
+    /// <summary>
+    /// Decrements the current time value of the simulation
+    /// </summary>
+    public void DecrementTime()
     {
         if (currentTime > 0)
             ChangeTime(currentTime - 1);
@@ -136,7 +178,11 @@ public class HeadMaker : MonoBehaviour {
             ChangeTime(data[0].Length - 1);
     }
 
-    void ChangeTime(int newTime)
+    /// <summary>
+    /// Changes the time in the simulation to the passed in time value
+    /// </summary>
+    /// <param name="newTime">The time to set the simulation to</param>
+    private void ChangeTime(int newTime)
     {
         for (int i = 0; i < nodes.Count; i++)
         {
